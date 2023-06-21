@@ -11,6 +11,9 @@ router.post("/signup", managerController.managerSignup);
 // 최고관리자 로그인
 router.post("/signin", managerController.managerSignin);
 
+// // 최고관리자 로그아웃
+// router.post("/logout", managerController.managerLogout);
+
 // 점주 회원가입 승인
 router.post("/grant/:id", auth, managerController.grantOwnerSignUp);
 

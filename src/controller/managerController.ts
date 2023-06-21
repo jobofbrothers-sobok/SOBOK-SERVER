@@ -9,7 +9,7 @@ import { UserSignInDTO } from "../interfaces/user/userSignInDTO";
 import { managerService } from "../service";
 import { CreateTourIdForStoreDTO } from "../interfaces/manager/createTourIdForStoreDTO";
 
-// 매니저 회원가입
+// 최고관리자 회원가입
 const managerSignup = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -50,7 +50,7 @@ const managerSignup = async (req: Request, res: Response) => {
   }
 };
 
-// 매니저 로그인
+// 최고관리자 로그인
 const managerSignin = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -72,7 +72,7 @@ const managerSignin = async (req: Request, res: Response) => {
         .send(fail(sc.UNAUTHORIZED, rm.INVALID_PASSWORD));
 
     const accessToken = jwtHandler.sign(userId);
-
+    console.log(accessToken);
     const result = {
       userId: userId,
       accessToken,
@@ -87,6 +87,36 @@ const managerSignin = async (req: Request, res: Response) => {
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
+
+// // 최고관리자 로그아웃
+// const managerLogout = async (req: Request, res: Response) => {
+//   const managerId = req.user.id;
+//   try {
+//     const userId = await managerService.managerLogout(managerId);
+
+//     // if (!userId)
+//     //   return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
+//     // else if (userId === sc.UNAUTHORIZED)
+//     //   return res
+//     //     .status(sc.UNAUTHORIZED)
+//     //     .send(fail(sc.UNAUTHORIZED, rm.INVALID_PASSWORD));
+
+//     // const accessToken = jwtHandler.sign(userId);
+//     // console.log(accessToken);
+//     // const result = {
+//     //   userId: userId,
+//     //   accessToken,
+//     // };
+
+//     res.status(sc.OK).send(success(sc.OK, rm.LOGOUT_SUCCESS, result));
+//   } catch (e) {
+//     console.log(e);
+//     // 서버 내부에서 오류 발생
+//     res
+//       .status(sc.INTERNAL_SERVER_ERROR)
+//       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+//   }
+// };
 
 // 점주 회원가입 승인
 const grantOwnerSignUp = async (req: Request, res: Response) => {
@@ -335,6 +365,7 @@ const getAllTour = async (req: Request, res: Response) => {
 const managerController = {
   managerSignup,
   managerSignin,
+  //managerLogout,
   grantOwnerSignUp,
   createTour,
   createTourIdForStore,

@@ -44,6 +44,18 @@ const managerSignIn = async (userSignInDTO: UserSignInDTO) => {
   }
 };
 
+// // 매니저 로그아웃
+// const managerLogout = async (managerId: number) => {
+//   const data = await prisma.manager.update({
+//     where: {
+//       id: managerId,
+//     },
+//     data: {
+//       access,
+//     },
+//   });
+// };
+
 // 점주 회원가입 승인
 const grantOwnerSignUp = async (id: number) => {
   const data = await prisma.store_Owner.update({
@@ -176,6 +188,7 @@ const getAllTour = async () => {
 const managerService = {
   managerSignup,
   managerSignIn,
+  //managerLogout,
   grantOwnerSignUp,
   findManagerById,
   createTour,
