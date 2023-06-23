@@ -114,6 +114,7 @@ model Store_Owner {
   termsAgree                       Boolean
   marketingAgree                   Boolean?
   storeId                          Int?
+  stampAuthorized                  Boolean? @default(false)
   Store_Store_ownerIdToStore_Owner Store[]  @relation("Store_ownerIdToStore_Owner")
   Store_Store_Owner_storeIdToStore Store?   @relation("Store_Owner_storeIdToStore", fields: [storeId], references: [id], onDelete: Cascade, map: "storeId")
 }
