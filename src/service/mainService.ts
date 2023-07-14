@@ -8,15 +8,80 @@ const prisma = new PrismaClient();
 
 // 키워드로 카페 검색
 const getCafeByKeyword = async (keyword: string) => {
-  const data = await prisma.store.findMany({
-    where: {
-      OR: [
-        { storeName: { contains: keyword } },
-        { description: { contains: keyword } },
-      ],
-    },
-  });
-  return data;
+  const keywordSplitArray = keyword.split(" ");
+  console.log(keywordSplitArray);
+  const categoryList = [
+    "콘센트",
+    "테이블",
+    "주차장",
+    "주차",
+    "애견동반",
+    "애견",
+    "강아지",
+    "루프탑",
+    "쇼파",
+    "소파",
+    "노키즈",
+    "통유리",
+    "흡연실",
+    "흡연",
+  ];
+  const categoryListEng = [
+    "concent",
+    "table",
+    "park",
+    "park",
+    "dog",
+    "dog",
+    "dog",
+    "rooftop",
+    "sofa",
+    "sofa",
+    "nokids",
+    "window",
+    "ciagrette",
+    "ciagrette",
+  ];
+
+  console.log("here");
+
+  // 카테고리 배열에 포함되는 문자열로 검색을 한 경우
+  if (categoryList.includes(keyword)) {
+    console.log("here2");
+    let keywordEng;
+    for (let i = 0; i < categoryList.length; i++) {
+      if (keyword === categoryList[i]) {
+        keyword = categoryListEng[i]; // 카테고리 문자열을 영어로 전환
+        keywordEng = keyword;
+      }
+    }
+    console.log("here3");
+
+    // 매장명 또는 매장설명 또는 매장 카테고리에 카테고리가 포함된 경우 리턴
+    const data = await prisma.store.findMany({
+      where: {
+        OR: [
+          { storeName: { contains: keyword } },
+          { description: { contains: keyword } },
+          { category: { has: keywordEng } },
+        ],
+      },
+    });
+    console.log("Data: ", data);
+    return data;
+  } else {
+    // 검색어에 카테고리명이 포함되지 않은 경우
+    const data = await prisma.store.findMany({
+      where: {
+        OR: [
+          { storeName: { contains: keyword } },
+          { description: { contains: keyword } },
+        ],
+      },
+    });
+    console.log("No Keyword Data: ", data);
+    return data;
+  }
 };
 
 // 카페 찜하기
