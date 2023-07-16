@@ -56,9 +56,9 @@ model Stamp {
   store      String?   @db.VarChar(30)
   tourId     Int?
   tour       String?   @db.VarChar(30)
-  Customer   Customer? @relation(fields: [customerId], references: [id], onDelete: NoAction, map: "customerId")
-  Store      Store?    @relation(fields: [storeId], references: [id], onDelete: NoAction, map: "storeId")
-  Tour       Tour?     @relation(fields: [tourId], references: [id], onDelete: NoAction, map: "tourId")
+  Customer   Customer? @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customerId")
+  Store      Store?    @relation(fields: [storeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "storeId")
+  Tour       Tour?     @relation(fields: [tourId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tourId")
 }
 
 model Store {
@@ -74,11 +74,10 @@ model Store {
   tourId                                 Int?
   x                                      String?         @db.VarChar(100)
   y                                      String?         @db.VarChar(100)
-  distance                               Float?          @default(0)
   Customer                               Customer[]
   Stamp                                  Stamp[]
   Store_Owner_Store_ownerIdToStore_Owner Store_Owner     @relation("Store_ownerIdToStore_Owner", fields: [ownerId], references: [id], onDelete: NoAction, map: "ownerId")
-  Tour                                   Tour?           @relation(fields: [tourId], references: [id], onDelete: NoAction, map: "tourId")
+  Tour                                   Tour?           @relation(fields: [tourId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tourId")
   Store_Like                             Store_Like[]
   Store_Menu                             Store_Menu[]
   Store_Notice                           Store_Notice[]
@@ -155,15 +154,16 @@ model Tour {
 }
 
 model Store_Review {
-  id        Int      @unique @default(autoincrement())
-  title     String?  @db.VarChar(100)
-  content   String   @db.VarChar(200)
-  image     String?  @db.VarChar(300)
-  timestamp DateTime @db.Timestamp(6)
-  writerId  Int
-  storeId   Int      @unique
-  Store     Store    @relation(fields: [storeId], references: [id], onDelete: NoAction, map: "storeId")
-  Customer  Customer @relation(fields: [writerId], references: [id], onDelete: NoAction, map: "wrtierId")
+  id         Int      @unique @default(autoincrement())
+  title      String?  @db.VarChar(100)
+  content    String   @db.VarChar(200)
+  image      String?  @db.VarChar(300)
+  timestamp  DateTime @db.Timestamp(6)
+  writerId   Int
+  storeId    Int      @unique
+  writerName String   @db.VarChar(20)
+  Store      Store    @relation(fields: [storeId], references: [id], onDelete: NoAction, map: "storeId")
+  Customer   Customer @relation(fields: [writerId], references: [id], onDelete: NoAction, map: "wrtierId")
 }
 
 model Notice {

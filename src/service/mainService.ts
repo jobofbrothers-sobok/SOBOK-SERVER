@@ -1,5 +1,5 @@
 import { CreateStoreReviewDTO } from "./../interfaces/store/createStoreReviewDTO";
-import { PrismaClient, Stamp, Store } from "@prisma/client";
+import { Customer, PrismaClient, Stamp, Store } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { sc } from "../constants";
 import axios from "axios";
@@ -8,8 +8,6 @@ const prisma = new PrismaClient();
 
 // 키워드로 카페 검색
 const getCafeByKeyword = async (keyword: string) => {
-  const keywordSplitArray = keyword.split(" ");
-  console.log(keywordSplitArray);
   const categoryList = [
     "콘센트",
     "테이블",
@@ -114,7 +112,7 @@ const deleteLikeCafe = async (storeId: number, customerId: number) => {
 // 유저 근처 카페 전체 조회
 const getAllCafe = async (x: number, y: number, category: Array<string>) => {
   // 전제 1: 투어에 포함된 카페 전체 조회
-  const allTourCafe = await prisma.store.findMany({
+  const allTourCafe: any = await prisma.store.findMany({
     where: {
       tourId: { not: null },
       category: { hasEvery: category },
@@ -136,22 +134,24 @@ const getAllCafe = async (x: number, y: number, category: Array<string>) => {
         Math.pow(+x - parseFloat(cafeX as string), 2) +
           Math.pow(+y - parseFloat(cafeY as string), 2)
       );
-      // 전체 카페 배열 내의 카페 객체 각각의 distance 필드 업데이트
-      const store = await prisma.store.update({
-        where: {
-          id: allTourCafe[i].id,
-        },
-        data: {
-          distance: distance * 100000,
-        },
-      });
+      // // 전체 카페 배열 내의 카페 객체 각각의 distance 필드 업데이트
+      // const store = await prisma.store.update({
+      //   where: {
+      //     id: allTourCafe[i].id,
+      //   },
+      //   data: {
+      //     distance: distance * 100000,
+      //   },
+      // });
       allTourCafe[i].distance = distance * 100000; // m 단위에 맞게 곱셈하여 추가
     }
   }
   console.log(allTourCafe);
 
   // sort 함수로 정렬
-  const sortAllTourCafe = allTourCafe.sort((a, b) => a.distance! - b.distance!);
+  const sortAllTourCafe = allTourCafe.sort(
+    (a: { distance: any }, b: { distance: any }) => a.distance - b.distance
+  );
   return sortAllTourCafe;
 };
 
@@ -226,17 +226,27 @@ const createCafeReviewById = async (
   path: string,
   date: Date
 ) => {
-  const data = await prisma.store_Review.create({
-    data: {
-      title: createStoreReviewDTO.title,
-      content: createStoreReviewDTO.content,
-      image: path,
-      timestamp: date,
-      writerId: writerId,
-      storeId: storeId,
+  const writer = await prisma.customer.findUnique({
+    where: {
+      id: writerId,
     },
   });
-  return data;
+  if (writer !== null) {
+    const data = await prisma.store_Review.create({
+      data: {
+        title: createStoreReviewDTO.title,
+        content: createStoreReviewDTO.content,
+        image: path,
+        timestamp: date,
+        writerId: writerId,
+        storeId: storeId,
+        writerName: writer.name,
+      },
+    });
+    return data;
+  } else {
+    return 0;
+  }
 };
 
 // 전체 카페 소식 모아보기
