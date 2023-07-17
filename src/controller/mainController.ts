@@ -91,24 +91,39 @@ const deleteLikeCafe = async (req: Request, res: Response) => {
 
 // 유저 근처 카페 전체 조회
 const getAllCafe = async (req: Request, res: Response) => {
+  console.log("req.body.id: ", req.body.id);
+  console.log("req.user: ", req.user);
   // 유저 현위치 x, y 좌표
   const x = req.body.x;
   const y = req.body.y;
   const category = req.body.category;
-
   if (!x || !y || !category) {
+    console.log("null value");
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
+  let customerId;
+  if (req.user === undefined) {
+    console.log("req user is undefined");
+    customerId = 77777;
+  }
+  if (req.user) {
+    console.log("req user exists");
+    customerId = req.user.id;
+  }
+
   try {
-    const data = await mainService.getAllCafe(x, y, category);
+    console.log("customerId: ", customerId);
+    const data = await mainService.getAllCafe(customerId, x, y, category);
     if (!data) {
+      console.log("bad request");
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.GET_ALL_NEAR_CAFE_FAIL));
+    } else {
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.GET_ALL_NEAR_CAFE_SUCCESS, data));
     }
-    return res
-      .status(sc.OK)
-      .send(success(sc.OK, rm.GET_ALL_NEAR_CAFE_SUCCESS, data));
   } catch (error) {
     console.log(error);
     res
